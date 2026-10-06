@@ -1,69 +1,116 @@
-import { AppHeader } from '@components';
-import { ConstructorPage } from '@pages';
-import { Preloader } from '@ui';
-import { Routes, Route } from 'react-router-dom';
+import {
+  AppHeader,
+  IngredientDetails,
+  Modal,
+  OrderInfo,
+  ProtectedRoute,
+} from '@components';
+import {
+  ConstructorPage,
+  Feed,
+  ForgotPassword,
+  Login,
+  NotFound404,
+  Profile,
+  ProfileOrders,
+  Register,
+  ResetPassword,
+} from '@pages';
+import { fetchIngredients } from '@slices/ingredientsSlice';
+import { authChecked, getUser } from '@slices/userSlice';
+import { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
-import type { AppContentProps } from './type';
-import type { TIngredient } from '@utils-types';
+import { useDispatch } from '@services/store';
 
 import '../../index.css';
 
 import styles from './app.module.css';
 
+type TLocationState = {
+  background?: Location;
+};
+
 const App = (): React.JSX.Element => {
-  const ingredients: TIngredient[] = [];
-  const isIngredientsLoading = false;
-  const ingredientsError = null;
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const backgroundLocation = (location.state as TLocationState | null)?.background;
+
+  useEffect(() => {
+    void dispatch(fetchIngredients());
+
+    void dispatch(getUser()).finally(() => {
+      void dispatch(authChecked());
+    });
+  }, [dispatch]);
 
   return (
     <div className={styles.app}>
       <AppHeader />
-      <AppContent
-        ingredients={ingredients}
-        isLoading={isIngredientsLoading}
-        error={ingredientsError}
-      />
+
+      <Routes location={backgroundLocation ?? location}>
+        <Route path="/" element={<ConstructorPage />} />
+        <Route path="/feed" element={<Feed />} />
+
+        <Route element={<ProtectedRoute onlyUnAuth />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/orders" element={<ProfileOrders />} />
+          <Route path="/profile/orders/:number" element={<OrderInfo />} />
+        </Route>
+
+        <Route
+          path="/ingredients/:id"
+          element={
+            <div className={styles.detailPageWrap}>
+              <h2 className={`${styles.detailHeader} text text_type_main-large`}>
+                Детали ингредиента
+              </h2>
+              <IngredientDetails />
+            </div>
+          }
+        />
+        <Route path="/feed/:number" element={<OrderInfo />} />
+
+        <Route path="*" element={<NotFound404 />} />
+      </Routes>
+
+      {backgroundLocation && (
+        <Routes>
+          <Route
+            path="/ingredients/:id"
+            element={
+              <Modal title="Детали ингредиента">
+                <IngredientDetails />
+              </Modal>
+            }
+          />
+          <Route
+            path="/feed/:number"
+            element={
+              <Modal title="Детали заказа">
+                <OrderInfo />
+              </Modal>
+            }
+          />
+          <Route
+            path="/profile/orders/:number"
+            element={
+              <Modal title="Детали заказа">
+                <OrderInfo />
+              </Modal>
+            }
+          />
+        </Routes>
+      )}
     </div>
   );
 };
 
 export default App;
-
-/* Маршруты показываются только когда ингредиенты загружены: без них не
-   отрисовать ни конструктор, ни состав заказа. */
-const AppContent = ({
-  ingredients,
-  isLoading,
-  error,
-}: AppContentProps): React.JSX.Element => {
-  if (isLoading) {
-    return <Preloader />;
-  }
-
-  if (error) {
-    return (
-      <p className={`${styles.message} text text_type_main-medium`}>
-        Не удалось загрузить ингредиенты
-        {error.message ? `: ${error.message}` : '.'}
-      </p>
-    );
-  }
-
-  if (!ingredients.length) {
-    return (
-      <p className={`${styles.message} text text_type_main-medium`}>Нет ингредиентов</p>
-    );
-  }
-
-  return <RouteComponent />;
-};
-
-const RouteComponent = (): React.JSX.Element => {
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<ConstructorPage />} />
-      </Routes>
-    </>
-  );
-};

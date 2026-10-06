@@ -14,11 +14,14 @@ export const OrderInfoUI = memo(function OrderInfoUI({
 }: OrderInfoUIProps): React.JSX.Element {
   return (
     <div className={styles.wrap}>
-      <h3 className={`text text_type_main-medium  pb-3 pt-10 ${styles.header}`}>
+      <h3 className={`text text_type_digits-default pb-3 pt-10 ${styles.header}`}>
+        #{String(orderInfo.number).padStart(6, '0')}
+      </h3>
+      <h3 className={`text text_type_main-medium pb-3 ${styles.header}`}>
         {orderInfo.name}
       </h3>
       <OrderStatus status={orderInfo.status} />
-      <p className={`text text_type_main-medium pt-15 pb=6`}>Состав:</p>
+      <p className={`text text_type_main-medium pt-15 pb-6`}>Состав:</p>
       <ul className={`${styles.list} mb-8`}>
         {Object.values(orderInfo.ingredientsInfo).map((item, index) => (
           <li className={`pb-4 pr-6 ${styles.item}`} key={index}>

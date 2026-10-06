@@ -11,6 +11,10 @@ export const ModalUI = memo(function ModalUI({
   onClose,
   children,
 }: TModalUIProps): React.JSX.Element {
+  const handleOverlayClick = (): void => {
+    onClose?.();
+  };
+
   return (
     <>
       <div className={styles.modal}>
@@ -22,7 +26,7 @@ export const ModalUI = memo(function ModalUI({
         </div>
         <div className={styles.content}>{children}</div>
       </div>
-      <ModalOverlayUI onClick={onClose} />
+      <ModalOverlayUI onClick={handleOverlayClick} />
     </>
   );
 });
