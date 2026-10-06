@@ -4,7 +4,7 @@ import {
   ProfileIcon,
   Logo,
 } from '@krgaa/react-developer-burger-ui-components';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import type { TAppHeaderUIProps } from './type';
 
@@ -42,9 +42,9 @@ export const AppHeaderUI = ({ userName }: TAppHeaderUIProps): React.JSX.Element 
         </NavLink>
       </div>
       <div className={styles.logo}>
-        <NavLink to="/">
+        <Link to="/">
           <Logo className="" />
-        </NavLink>
+        </Link>
       </div>
       <div className={styles.link_position_last}>
         <NavLink

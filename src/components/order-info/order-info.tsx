@@ -30,7 +30,8 @@ export const OrderInfo = (): React.JSX.Element => {
     [feedOrders, userOrders, orderNumber]
   );
 
-  const orderData = orderFromStore ?? currentOrder;
+  const orderData =
+    orderFromStore ?? (currentOrder?.number === orderNumber ? currentOrder : null);
 
   useEffect(() => {
     if (!orderFromStore && orderNumber) {

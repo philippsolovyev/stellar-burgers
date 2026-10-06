@@ -22,7 +22,6 @@ import { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
 import { useDispatch } from '@services/store';
-import { getCookie } from '@utils/cookie';
 
 import '../../index.css';
 
@@ -40,15 +39,9 @@ const App = (): React.JSX.Element => {
   useEffect(() => {
     void dispatch(fetchIngredients());
 
-    const accessToken = getCookie('accessToken');
-
-    if (accessToken) {
-      void dispatch(getUser()).finally(() => {
-        void dispatch(authChecked());
-      });
-    } else {
+    void dispatch(getUser()).finally(() => {
       void dispatch(authChecked());
-    }
+    });
   }, [dispatch]);
 
   return (
@@ -72,7 +65,17 @@ const App = (): React.JSX.Element => {
           <Route path="/profile/orders/:number" element={<OrderInfo />} />
         </Route>
 
-        <Route path="/ingredients/:id" element={<IngredientDetails />} />
+        <Route
+          path="/ingredients/:id"
+          element={
+            <div className={styles.detailPageWrap}>
+              <h2 className={`${styles.detailHeader} text text_type_main-large`}>
+                Детали ингредиента
+              </h2>
+              <IngredientDetails />
+            </div>
+          }
+        />
         <Route path="/feed/:number" element={<OrderInfo />} />
 
         <Route path="*" element={<NotFound404 />} />
