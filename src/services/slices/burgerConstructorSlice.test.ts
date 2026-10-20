@@ -3,6 +3,7 @@ import burgerConstructorReducer, {
   removeIngredient,
   moveIngredient,
   clearConstructor,
+  initialState,
 } from './burgerConstructorSlice';
 
 import type { TBurgerConstructorState } from './burgerConstructorSlice';
@@ -33,10 +34,9 @@ const mockIngredient: TIngredient = {
 describe('burgerConstructorSlice', () => {
   it('должен вернуть начальное состояние при вызове с неизвестным экшеном', () => {
     const result = burgerConstructorReducer(undefined, { type: 'UNKNOWN' });
-    expect(result).toEqual({
-      bun: null,
-      ingredients: [],
-    });
+
+    // Сравниваем с импортированным initialState, чтобы тест не разошёлся со слайсом
+    expect(result).toEqual(initialState);
   });
 
   it('должен добавить булку при вызове addIngredient с типом bun', () => {
@@ -85,9 +85,12 @@ describe('burgerConstructorSlice', () => {
     const action = moveIngredient({ from: 0, to: 2 });
     const result = burgerConstructorReducer(stateWithIngredients, action);
 
-    expect(result.ingredients[0].name).toBe('Второй');
-    expect(result.ingredients[1].name).toBe('Третий');
-    expect(result.ingredients[2].name).toBe('Первый');
+    // Проверяем порядок одним сравнением — короче и понятнее при падении
+    expect(result.ingredients.map((i) => i.name)).toEqual([
+      'Второй',
+      'Третий',
+      'Первый',
+    ]);
   });
 
   it('должен очистить конструктор при вызове clearConstructor', () => {

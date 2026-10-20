@@ -1,4 +1,4 @@
-import ingredientsReducer, { fetchIngredients } from './ingredientsSlice';
+import ingredientsReducer, { fetchIngredients, initialState } from './ingredientsSlice';
 
 import type { TIngredientsState } from './ingredientsSlice';
 import type { TIngredient } from '@utils-types';
@@ -24,18 +24,14 @@ describe('ingredientsSlice', () => {
   it('должен вернуть начальное состояние при вызове с неизвестным экшеном', () => {
     const result = ingredientsReducer(undefined, { type: 'UNKNOWN' });
 
-    expect(result).toEqual({
-      items: [],
-      isLoading: false,
-      error: null,
-    });
+    // Сравниваем с импортированным initialState, чтобы тест не разошёлся со слайсом
+    expect(result).toEqual(initialState);
   });
 
   it('должен выставить isLoading = true и очистить ошибку при fetchIngredients.pending', () => {
     // Начальное состояние с ошибкой, чтобы проверить её очистку
     const stateWithError: TIngredientsState = {
-      items: [],
-      isLoading: false,
+      ...initialState,
       error: 'Старая ошибка',
     };
 
@@ -50,9 +46,8 @@ describe('ingredientsSlice', () => {
 
   it('должен записать ингредиенты и выставить isLoading = false при fetchIngredients.fulfilled', () => {
     const stateLoading: TIngredientsState = {
-      items: [],
+      ...initialState,
       isLoading: true,
-      error: null,
     };
 
     const result = ingredientsReducer(
@@ -67,9 +62,8 @@ describe('ingredientsSlice', () => {
 
   it('должен записать ошибку и выставить isLoading = false при fetchIngredients.rejected', () => {
     const stateLoading: TIngredientsState = {
-      items: [],
+      ...initialState,
       isLoading: true,
-      error: null,
     };
 
     const error = { message: 'Ошибка сети', name: 'Error' };
