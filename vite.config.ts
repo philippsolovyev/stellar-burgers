@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       enabledMode: ['development'],
       esmExport: true
     }), tsconfigPaths()],
-    base: '',
+    base: '/',
     define: {
       'process.env.BURGER_API_URL': JSON.stringify(env.BURGER_API_URL ?? '')
     },
